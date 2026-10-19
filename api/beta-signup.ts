@@ -9,8 +9,13 @@
  * away. Without them the sign-up is still stored and the page still confirms it on screen.
  *
  * Kept in one file (no relative imports) because Vercel runs it as a native ESM module. The Vite dev/preview server
- * serves the same handler locally with a file-backed store (see vite.config.ts).
+ * serves the same handler locally with a file-backed store (see apps/web/vite.config.ts). It lives at the repo root
+ * because Vercel builds this repo from its root (vercel.json) and only finds functions in <root>/api.
  */
+
+/** process.env without needing @types/node: Vercel compiles this file from the repo root, which has no Node types. */
+const processEnv: Record<string, string | undefined> =
+  (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {};
 
 export type SignupKind = "individual" | "company";
 
@@ -85,7 +90,7 @@ export async function handleBetaSignup(request: Request, store: SignupStore | nu
 }
 
 /** Upstash Redis REST store (env names from the Vercel Marketplace integration, or Upstash's own). */
-export function upstashStoreFromEnv(env = process.env): SignupStore | null {
+export function upstashStoreFromEnv(env = processEnv): SignupStore | null {
   const url = env.KV_REST_API_URL ?? env.UPSTASH_REDIS_REST_URL;
   const token = env.KV_REST_API_TOKEN ?? env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) return null;
@@ -109,7 +114,7 @@ export function upstashStoreFromEnv(env = process.env): SignupStore | null {
 }
 
 /** Resend confirmation email; null when it is not configured. */
-export function resendMailerFromEnv(env = process.env): Mailer | null {
+export function resendMailerFromEnv(env = processEnv): Mailer | null {
   const key = env.RESEND_API_KEY;
   const from = env.BETA_FROM_EMAIL;
   if (!key || !from) return null;

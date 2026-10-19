@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Connect, type Plugin } from "vite";
-import { handleBetaSignup, resendMailerFromEnv, upstashStoreFromEnv, type BetaSignup, type SignupStore } from "./api/beta-signup";
+import { handleBetaSignup, resendMailerFromEnv, upstashStoreFromEnv, type BetaSignup, type SignupStore } from "../../api/beta-signup.ts";
 
 const LOCAL_SIGNUPS_FILE = fileURLToPath(new URL("./.beta-signups.local.json", import.meta.url));
 
@@ -22,7 +22,7 @@ const fileStore: SignupStore = {
 };
 
 /**
- * Serves api/beta-signup.ts at /api/beta-signup under `vite` and `vite preview`, as Vercel does in production. Uses
+ * Serves the repo-root api/beta-signup.ts at /api/beta-signup under `vite` and `vite preview`, as Vercel does in production. Uses
  * Upstash and Resend when their env vars are set, otherwise the local file and no confirmation email.
  */
 function betaSignupApi(): Plugin {

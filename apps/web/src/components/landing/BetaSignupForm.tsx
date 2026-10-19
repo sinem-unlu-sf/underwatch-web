@@ -7,7 +7,7 @@ type Result = { status: "created" | "exists"; emailed: boolean; email: string };
 const input =
   "h-10 w-full rounded-md border border-border-strong bg-white/[0.03] px-3 text-[14px] text-text placeholder:text-text-tertiary focus:border-accent focus:outline-none";
 
-/** Beta sign-up for the static landing page; posts to the Vercel Function in api/beta-signup.ts. */
+/** Beta sign-up for the static landing page; posts to the Vercel Function in the repo-root api/beta-signup.ts. */
 export function BetaSignupForm() {
   const [kind, setKind] = useState<Kind>("individual");
   const [email, setEmail] = useState("");

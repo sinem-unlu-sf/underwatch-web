@@ -12,7 +12,7 @@ export const LIVE_DEMO_HREF = `/findings/${LIVE_DEMO_FINDING_ID}`;
 export const FIXTURE_DEMO_HREF = `/findings/${FIXTURE_DEMO_FINDING_ID}`;
 
 /**
- * Static landing-only build (`pnpm build:landing`, deployed to Vercel): no API server or app routes behind it, so
+ * Static landing-only build (`pnpm build:landing`, deployed to Vercel via the repo-root vercel.json): no API server or app routes behind it, so
  * the CTAs that would go to sign-up, the app and the demos lead to the beta sign-up form instead.
  */
 export const LANDING_ONLY = import.meta.env.VITE_LANDING_ONLY === "1";
