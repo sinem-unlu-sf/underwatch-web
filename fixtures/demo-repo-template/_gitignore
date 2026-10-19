@@ -1,0 +1,5 @@
+# Synthetic secrets stay out of git history.
+.env
+secrets/
+__pycache__/
+*.pyc

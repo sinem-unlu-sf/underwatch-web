@@ -1,0 +1,85 @@
+# Underwatch - observe-files (monitor only, no enforcement)
+#
+# security_file_open      -> file.open  (return value: 0 = open permitted, <0 = failed)
+# security_file_permission-> file.read / file.write (arg 1 mask: 4 = MAY_READ, 2 = MAY_WRITE)
+#   Fires at read()/write() syscall time BEFORE data moves; it does not prove
+#   bytes were read or written. mmap() reads do not pass through it.
+#
+# Paths are the resolved, container-relative paths Tetragon reports (relative
+# opens, symlinks and bash builtin reads resolved in the spike).
+# Scope: path selectors only (VM-wide). The collector keeps only events whose
+# docker id matches the attached container. Selectors are ORed; up to 5.
+# Overhead measured in the spike: ~1.8x on a tight read loop with a NON-matching
+# file policy loaded, ~2.9x when every read matched.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "kw-observe-files"
+spec:
+  kprobes:
+  - call: "security_file_open"
+    syscall: false
+    return: true
+    args:
+    - index: 0
+      type: "file"
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/workspace/"
+        - "/canary/"
+        - "/kw-canary/"
+        - "/home/"
+        - "/root/"
+        - "/etc/shadow"
+        - "/etc/claude-code/"
+    - matchArgs:
+      - index: 0
+        operator: "Postfix"
+        values:
+        - ".env"
+        - ".pem"
+        - ".key"
+        - "id_rsa"
+        - "id_ed25519"
+        - ".netrc"
+        - "credentials"
+  - call: "security_file_permission"
+    syscall: false
+    return: true
+    args:
+    - index: 0
+      type: "file"
+    - index: 1
+      type: "int"
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+        - "/workspace/"
+        - "/canary/"
+        - "/kw-canary/"
+        - "/home/"
+        - "/root/"
+        - "/etc/shadow"
+        - "/etc/claude-code/"
+    - matchArgs:
+      - index: 0
+        operator: "Postfix"
+        values:
+        - ".env"
+        - ".pem"
+        - ".key"
+        - "id_rsa"
+        - "id_ed25519"
+        - ".netrc"
+        - "credentials"

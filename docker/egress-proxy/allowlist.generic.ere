@@ -1,0 +1,5 @@
+# EXPERIMENTAL generic CLI agent (Codex CLI on ai&): deny-all agent egress.
+# The agent reaches ai& ONLY through the per-run credential broker (internal network, NO_PROXY), so no host is
+# allowlisted here. Codex's own background requests (chatgpt.com, github.com, ...) show up as DENIED in the proxy log;
+# they are agent-runtime background traffic, not task actions.
+^kw-deny-all\.invalid$

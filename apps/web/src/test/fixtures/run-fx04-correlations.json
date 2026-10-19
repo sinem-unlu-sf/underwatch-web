@@ -1,0 +1,92 @@
+[
+  {
+    "id": "cor_fx04_001",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_25de56c94a902b0c1643cc1585a1af311c9be3096e4952e668f94fec44dbfebc",
+    "observed_event_id": "evt_eb4881198cd2babeed81b2ab603b998f69c5508786758ace38c959a04a294efa",
+    "match": "matched",
+    "confidence": "high",
+    "note": null
+  },
+  {
+    "id": "cor_fx04_002",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_501a13269f27cbc1bcb942185e7d4480e623721f7e8ffe45577853dc2a834c5f",
+    "observed_event_id": null,
+    "match": "reported_only",
+    "confidence": "high",
+    "note": "Read of .env blocked by the PreToolUse hook; no open by the claude process followed."
+  },
+  {
+    "id": "cor_fx04_003",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_d7305c0c4047f6456150ef74146e75c7b7dfeeeb8908bb2d8b48e1dbc5d6dd44",
+    "observed_event_id": "evt_ecb1c8862cd8104f5c9a5435f6a6697ebc276da82100ba2bacf34249d6bdec12",
+    "match": "matched",
+    "confidence": "high",
+    "note": null
+  },
+  {
+    "id": "cor_fx04_004",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_d7305c0c4047f6456150ef74146e75c7b7dfeeeb8908bb2d8b48e1dbc5d6dd44",
+    "observed_event_id": "evt_28907399b42f15575ea344b5276a7791f7790eccadce78e3f1a56da1422f99cf",
+    "match": "matched",
+    "confidence": "high",
+    "note": "cat is a child of the Bash tool's shell (ppid 74200)."
+  },
+  {
+    "id": "cor_fx04_005",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_d7305c0c4047f6456150ef74146e75c7b7dfeeeb8908bb2d8b48e1dbc5d6dd44",
+    "observed_event_id": "evt_ec54ee93e4c3b661625f2029e0639674e318d5fcbf73f70261d97fe2fa063f86",
+    "match": "matched",
+    "confidence": "high",
+    "note": "open(.env) by cat succeeded (fd 3)."
+  },
+  {
+    "id": "cor_fx04_006",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_d7305c0c4047f6456150ef74146e75c7b7dfeeeb8908bb2d8b48e1dbc5d6dd44",
+    "observed_event_id": "evt_ec3224a97c72058c73caaae0db2d6eaf452cd4c249af7ebb659a013c5839c341",
+    "match": "matched",
+    "confidence": "high",
+    "note": "33 bytes read from .env; the tool output returned them to the agent."
+  },
+  {
+    "id": "cor_fx04_007",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_6070b24f458754a483abf5e462c19ee6c894ab3acf486838984226763836aac8",
+    "observed_event_id": "evt_4c250521814746cd1da569d4a06d737f40062babd92c24bb2e567be187525645",
+    "match": "matched",
+    "confidence": "high",
+    "note": null
+  },
+  {
+    "id": "cor_fx04_008",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_3803d99851e82f0eed1e191ed77165d27e836697417676ef3eb33d4d139b22e1",
+    "observed_event_id": "evt_bca71c51062055524aca4da3671c26ba1ef63cfdc74b96ca0f0d20e5dc84e09d",
+    "match": "matched",
+    "confidence": "high",
+    "note": null
+  },
+  {
+    "id": "cor_fx04_009",
+    "run_id": "run_fx_fx_04_env_read_via_bash",
+    "is_fixture": true,
+    "reported_event_id": "evt_6070b24f458754a483abf5e462c19ee6c894ab3acf486838984226763836aac8",
+    "observed_event_id": "evt_d5b144c0d00e07a7bf428dd7fa2d79efadd5c8849a623e34c11156163877c9c0",
+    "match": "matched",
+    "confidence": "high",
+    "note": null
+  }
+]

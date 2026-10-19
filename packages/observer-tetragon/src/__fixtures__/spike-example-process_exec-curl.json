@@ -1,0 +1,37 @@
+{
+ "process_exec": {
+  "process": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjU1ODE4OTc2NTEzMTo4MTYy",
+   "pid": 8162,
+   "uid": 0,
+   "cwd": "/tmp/w",
+   "binary": "/usr/bin/curl",
+   "arguments": "-sS -o /dev/null -w %{http_code} --max-time 10 https://example.com",
+   "flags": "execve clone inInitTree",
+   "start_time": "2026-10-17T01:14:00.091545883Z",
+   "auid": 4294967295,
+   "docker": "864fea5e5dc0f3b3643e8c840e5c25d",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjU1ODE4OTIxMTc1Njo4MTYx",
+   "tid": 8162,
+   "in_init_tree": true
+  },
+  "parent": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjU1ODE4OTIxMTc1Njo4MTYx",
+   "pid": 8161,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/tmp/w/workload.sh",
+   "arguments": "/tmp/w/workload.sh",
+   "flags": "execve inInitTree",
+   "start_time": "2026-10-17T01:14:00.090992717Z",
+   "auid": 4294967295,
+   "docker": "864fea5e5dc0f3b3643e8c840e5c25d",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjU1ODE1MjkyNDMzOTo4MTUy",
+   "refcnt": 1,
+   "tid": 8161,
+   "in_init_tree": true
+  }
+ },
+ "node_name": "6e70e6c235a5",
+ "time": "2026-10-17T01:14:00.091545633Z"
+}

@@ -1,0 +1,20 @@
+# Rendered by kw-egress-start. No LogFile/Syslog: tinyproxy -d logs to stderr.
+User nobody
+Group nobody
+Port 8888
+Listen 0.0.0.0
+Timeout 60
+LogLevel Info
+MaxClients 64
+# Only the agent's internal subnet may use the proxy.
+Allow __KW_ALLOW_SUBNET__
+ViaProxyName "kw-egress"
+DisableViaHeader Yes
+# Default deny: only hosts matching the allowlist are proxied.
+FilterDefaultDeny Yes
+Filter "/etc/kw-egress/allowlist.ere"
+FilterType ere
+FilterURLs Off
+FilterCaseSensitive No
+# CONNECT only to 443 (HTTPS). Other ports are refused and logged.
+ConnectPort 443

@@ -1,0 +1,48 @@
+{
+ "process_lsm": {
+  "process": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjY2MDM2NjI0NTMwMjo5MjEy",
+   "pid": 9212,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/usr/bin/cat",
+   "arguments": "/canary/secret.txt",
+   "flags": "execve rootcwd clone inInitTree",
+   "start_time": "2026-10-17T01:15:42.268294889Z",
+   "auid": 4294967295,
+   "docker": "98e716b94e9e1a797b03c51bbba2285",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjY2MDM2NTU3OTkyNzo5MTk5",
+   "refcnt": 1,
+   "tid": 9212,
+   "in_init_tree": true
+  },
+  "parent": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjY2MDM2NTU3OTkyNzo5MTk5",
+   "pid": 9199,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/usr/bin/bash",
+   "arguments": "-c \"cat /canary/secret.txt; echo \"cat exit=$?\"; python3 -c \"\nimport errno\ntry:\n    open(\\\"/canary/secret.txt\\\").read(); print(\\\"py read OK\\\")\nexcept OSError as e:\n    print(\\\"py OSError errno=\\\", e.errno, errno.errorcode.get(e.errno), e.strerror)\n\"; cd /canary && cat ./secret.txt; echo \"relative cat exit=$?\"; ln -s /canary/secret.txt /tmp/link && cat /tmp/link; echo \"symlink cat exit=$?\"; strace -e trace=openat cat /canary/secret.txt 2>&1 | tail -3\"",
+   "flags": "execve rootcwd clone inInitTree",
+   "start_time": "2026-10-17T01:15:42.267629555Z",
+   "auid": 4294967295,
+   "docker": "98e716b94e9e1a797b03c51bbba2285",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjY2MDMxOTAxNTU1Mjo5MTc1",
+   "tid": 9199,
+   "in_init_tree": true
+  },
+  "function_name": "file_open",
+  "policy_name": "kw-canary-lsm-override",
+  "args": [
+   {
+    "file_arg": {
+     "path": "/canary/secret.txt",
+     "permission": "-rw-r--r--"
+    }
+   }
+  ],
+  "action": "KPROBE_ACTION_OVERRIDE"
+ },
+ "node_name": "6e70e6c235a5",
+ "time": "2026-10-17T01:15:42.268381846Z"
+}

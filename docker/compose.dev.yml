@@ -1,0 +1,55 @@
+# Underwatch local dev dependencies: Neo4j evidence graph (projection only; SQLite stays the system of record).
+#
+#   docker compose -f docker/compose.dev.yml up -d --wait
+#
+# Credentials: .env.neo4j (NEO4J_URI/NEO4J_USER/NEO4J_PASSWORD, read by @kw/graph) and .env.neo4j.auth ("neo4j/<pw>",
+# mounted as a compose secret and consumed by the image's NEO4J_AUTH_FILE support, so the password is not in the
+# container env / `docker inspect`). Both are generated once with a random password and are gitignored by `.env*`.
+# Other services belong in separate compose files.
+name: kw-dev
+
+services:
+  neo4j:
+    # Neo4j 2026.09.0 Community (current CalVer release; recommended by the neo4j research track, Docker Hub tags
+    # verified by fact-check). Tags are rebuilt in place, so the image is pinned by digest: this is the multi-arch
+    # index digest of the locally pulled neo4j:community, whose NEO4J_TARBALL is neo4j-community-2026.09.0 and whose
+    # dbms.components() reports 2026.09.0. Fallback: Neo4j 5.26 LTS,
+    #   neo4j:5-community@sha256:f1e52d4dc6da122468c4a3c1050a4f5e117f6d3268625237c34d49166f0d6082 (5.26.32)
+    # (@kw/graph detects the server and uses Cypher 25 on 2025+ servers, Cypher 5 on 5.x; tests pass on both).
+    # A store created by 2026.x cannot be opened by 5.26: switch versions with a fresh volume.
+    image: neo4j:community@sha256:6f3f17e72d69bb6f26b03f6186f5afb15a201f8b460bb69b0cd8030717f9f01a
+    container_name: kw-neo4j
+    labels:
+      kw-dev: "1"
+    restart: unless-stopped
+    ports:
+      # Non-default host ports, loopback only.
+      - "127.0.0.1:7697:7687"
+      - "127.0.0.1:7484:7474"
+    environment:
+      NEO4J_AUTH_FILE: /run/secrets/neo4j_auth
+      NEO4J_server_memory_heap_initial__size: 512m
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 256m
+      NEO4J_dbms_usage__report_enabled: "false"
+    secrets:
+      - neo4j_auth
+    volumes:
+      - kw-neo4j-data:/data
+    healthcheck:
+      # Real Bolt round-trip with auth (not just "HTTP port open").
+      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u neo4j -p \"$$(cut -d/ -f2- /run/secrets/neo4j_auth)\" 'RETURN 1' >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+
+secrets:
+  neo4j_auth:
+    file: ../.env.neo4j.auth
+
+volumes:
+  kw-neo4j-data:
+    name: kw-neo4j-data
+    labels:
+      kw-dev: "1"

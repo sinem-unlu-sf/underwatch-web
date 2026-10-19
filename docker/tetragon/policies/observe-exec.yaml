@@ -1,0 +1,14 @@
+# Underwatch - observe-exec
+#
+# NOT a TracingPolicy. Process exec/exit observation comes from Tetragon's
+# built-in execve sensor, which is always on: every process_exec / process_exit
+# event carries pid, uid, cwd, binary, full arguments, exec_id, parent_exec_id,
+# the full parent process object and the (31-hex-char, truncated) docker
+# container id. Nothing has to be loaded for it, and loading a TracingPolicy
+# with no hooks is rejected by Tetragon.
+#
+# @kw/observer-tetragon reads this file only to record it in health()/coverage.
+# Validated in the observation spike (Tetragon v1.7.0, Docker Desktop 4.57,
+# kernel 6.12.54-linuxkit).
+x-kw-builtin-sensor: execve
+x-kw-events: [process_exec, process_exit]

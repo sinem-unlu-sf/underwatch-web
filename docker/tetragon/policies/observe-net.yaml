@@ -1,0 +1,23 @@
+# Underwatch - observe-net (monitor only)
+#
+# tcp_connect(sock) fires when the kernel sends the SYN (state TCP_SYN_SENT).
+# It establishes a connect ATTEMPT to daddr:dport; it does not establish that
+# the handshake completed or that any bytes were transferred. UDP/DNS are not
+# covered. Loopback is excluded to cut noise.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "kw-observe-net"
+spec:
+  kprobes:
+  - call: "tcp_connect"
+    syscall: false
+    args:
+    - index: 0
+      type: "sock"
+    selectors:
+    - matchArgs:
+      - index: 0
+        operator: "NotDAddr"
+        values:
+        - "127.0.0.0/8"

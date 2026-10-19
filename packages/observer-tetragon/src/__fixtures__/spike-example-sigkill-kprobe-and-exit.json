@@ -1,0 +1,95 @@
+[
+ {
+  "process_kprobe": {
+   "process": {
+    "exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNTIzMTk1Nzo4ODgy",
+    "pid": 8882,
+    "uid": 0,
+    "cwd": "/",
+    "binary": "/usr/bin/cat",
+    "arguments": "/canary/secret.txt",
+    "flags": "execve rootcwd clone inInitTree",
+    "start_time": "2026-10-17T01:15:17.807281543Z",
+    "auid": 4294967295,
+    "docker": "b73621d5915fa77d37631ee4913b57d",
+    "parent_exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNDQxNjc0OTo4ODY5",
+    "refcnt": 1,
+    "tid": 8882,
+    "in_init_tree": true
+   },
+   "parent": {
+    "exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNDQxNjc0OTo4ODY5",
+    "pid": 8869,
+    "uid": 0,
+    "cwd": "/",
+    "binary": "/usr/bin/bash",
+    "arguments": "-c \"cat /canary/secret.txt; echo \"cat exit=$?\"; python3 -c \"f=open(\\\"/canary/secret.txt\\\"); print(\\\"py opened ok\\\"); d=f.read(); print(\\\"py read\\\", len(d))\"; echo \"python exit=$?\"; head -c 0 /canary/secret.txt; echo \"head -c0 exit=$?\"; ls -la /canary/secret.txt; echo ls_exit=$?\"",
+    "flags": "execve rootcwd clone inInitTree",
+    "start_time": "2026-10-17T01:15:17.806466461Z",
+    "auid": 4294967295,
+    "docker": "b73621d5915fa77d37631ee4913b57d",
+    "parent_exec_id": "NmU3MGU2YzIzNWE1OjYzNTg1ODM1MzcwNzo4ODQ1",
+    "tid": 8869,
+    "in_init_tree": true
+   },
+   "function_name": "security_file_permission",
+   "args": [
+    {
+     "file_arg": {
+      "path": "/canary/secret.txt",
+      "permission": "-rw-r--r--"
+     }
+    },
+    {
+     "int_arg": 4
+    }
+   ],
+   "return": {
+    "int_arg": 0
+   },
+   "action": "KPROBE_ACTION_SIGKILL",
+   "policy_name": "kw-canary-sigkill",
+   "return_action": "KPROBE_ACTION_SIGKILL"
+  },
+  "node_name": "6e70e6c235a5",
+  "time": "2026-10-17T01:15:17.807512210Z"
+ },
+ {
+  "process_exit": {
+   "process": {
+    "exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNTIzMTk1Nzo4ODgy",
+    "pid": 8882,
+    "uid": 0,
+    "cwd": "/",
+    "binary": "/usr/bin/cat",
+    "arguments": "/canary/secret.txt",
+    "flags": "execve rootcwd clone inInitTree",
+    "start_time": "2026-10-17T01:15:17.807281543Z",
+    "auid": 4294967295,
+    "docker": "b73621d5915fa77d37631ee4913b57d",
+    "parent_exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNDQxNjc0OTo4ODY5",
+    "tid": 8882,
+    "in_init_tree": true
+   },
+   "parent": {
+    "exec_id": "NmU3MGU2YzIzNWE1OjYzNTkwNDQxNjc0OTo4ODY5",
+    "pid": 8869,
+    "uid": 0,
+    "cwd": "/",
+    "binary": "/usr/bin/bash",
+    "arguments": "-c \"cat /canary/secret.txt; echo \"cat exit=$?\"; python3 -c \"f=open(\\\"/canary/secret.txt\\\"); print(\\\"py opened ok\\\"); d=f.read(); print(\\\"py read\\\", len(d))\"; echo \"python exit=$?\"; head -c 0 /canary/secret.txt; echo \"head -c0 exit=$?\"; ls -la /canary/secret.txt; echo ls_exit=$?\"",
+    "flags": "execve rootcwd clone inInitTree",
+    "start_time": "2026-10-17T01:15:17.806466461Z",
+    "auid": 4294967295,
+    "docker": "b73621d5915fa77d37631ee4913b57d",
+    "parent_exec_id": "NmU3MGU2YzIzNWE1OjYzNTg1ODM1MzcwNzo4ODQ1",
+    "tid": 8869,
+    "in_init_tree": true
+   },
+   "signal": "SIGKILL",
+   "time": "2026-10-17T01:15:17.807639044Z"
+  },
+  "node_name": "6e70e6c235a5",
+  "time": "2026-10-17T01:15:17.807638961Z"
+ }
+]

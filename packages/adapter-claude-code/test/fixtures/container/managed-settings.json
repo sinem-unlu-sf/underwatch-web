@@ -1,0 +1,482 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls *)"
+    ],
+    "deny": [
+      "Read(**/.env)"
+    ],
+    "ask": [],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "SessionStart"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Setup": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "Setup"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "UserPromptSubmit"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "UserPromptExpansion"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PreToolUse"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PermissionRequest"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PermissionDenied"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PostToolUse"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PostToolUseFailure"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolBatch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PostToolBatch"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "Notification"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "MessageDisplay": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "MessageDisplay"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "SubagentStart"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "SubagentStop"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "TaskCreated"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "TaskCompleted"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "Stop"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "StopFailure"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "TeammateIdle"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "InstructionsLoaded"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "ConfigChange"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "CwdChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "CwdChanged"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "DirectoryAdded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "DirectoryAdded"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "FileChanged"
+            ],
+            "timeout": 10
+          }
+        ],
+        "matcher": ".env|CLAUDE.md"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PreCompact"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PostCompact"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreModelSwitch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PreModelSwitch"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostModelSwitch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "PostModelSwitch"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Elicitation": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "Elicitation"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "ElicitationResult": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "ElicitationResult"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "/opt/kw/kw-hook.mjs",
+              "SessionEnd"
+            ],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "allowManagedHooksOnly": true,
+  "allowManagedPermissionRulesOnly": true
+}

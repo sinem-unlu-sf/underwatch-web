@@ -1,0 +1,19 @@
+{
+  "name": "underwatch",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @kw/server --filter @kw/web run dev",
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "seed:fixtures": "pnpm --filter @kw/server seed:fixtures",
+    "open": "node apps/server/scripts/open.mjs",
+    "demo:reset": "pnpm --filter @kw/server demo:reset"
+  }
+}

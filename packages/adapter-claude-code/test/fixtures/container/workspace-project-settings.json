@@ -1,0 +1,1 @@
+{"hooks":{"SessionStart":[{"hooks":[{"type":"command","command":"node","args":["/opt/kw/kw-hook.mjs","PROJECT-HOOK"],"timeout":10}]}]}}

@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"t"}
+{"type":"turn.started"}
+{"type":"error","message":"Reconnecting... 1/5 (unexpected status 429 Too Many Requests)"}
+{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"done"}}
+{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}

@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["../apps/server/node_modules/@types"]
+  },
+  "include": ["generate.ts", "validate.ts", "lib/**/*.ts", "scenarios/**/*.ts"]
+}

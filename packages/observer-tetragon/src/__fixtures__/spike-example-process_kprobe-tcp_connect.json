@@ -1,0 +1,56 @@
+{
+ "process_kprobe": {
+  "process": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjY5MjM1NTM1MTU2Njo5NTMw",
+   "pid": 9530,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/usr/bin/bash",
+   "arguments": "-c \"exec 3<>/dev/tcp/1.1.1.1/443\"",
+   "flags": "execve rootcwd clone inInitTree",
+   "start_time": "2026-10-17T01:16:14.257476876Z",
+   "auid": 4294967295,
+   "docker": "ac8de675f8902539a623a8673a44be5",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjY5MjM1NTExNDc3NDo5NTI5",
+   "refcnt": 1,
+   "tid": 9530,
+   "in_init_tree": true
+  },
+  "parent": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjY5MjM1NTExNDc3NDo5NTI5",
+   "pid": 9529,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/usr/bin/timeout",
+   "arguments": "5 bash -c \"exec 3<>/dev/tcp/1.1.1.1/443\"",
+   "flags": "execve rootcwd clone inInitTree",
+   "start_time": "2026-10-17T01:16:14.257240167Z",
+   "auid": 4294967295,
+   "docker": "ac8de675f8902539a623a8673a44be5",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjY5MjM1NDMzNDM1Nzo5NTE1",
+   "tid": 9529,
+   "in_init_tree": true
+  },
+  "function_name": "tcp_connect",
+  "args": [
+   {
+    "sock_arg": {
+     "family": "AF_INET",
+     "type": "SOCK_STREAM",
+     "protocol": "IPPROTO_TCP",
+     "saddr": "172.17.0.5",
+     "daddr": "1.1.1.1",
+     "sport": 57862,
+     "dport": 443,
+     "cookie": "18446462602143343616",
+     "state": "TCP_SYN_SENT"
+    }
+   }
+  ],
+  "action": "KPROBE_ACTION_SIGKILL",
+  "policy_name": "kw-net",
+  "return_action": "KPROBE_ACTION_POST"
+ },
+ "node_name": "6e70e6c235a5",
+ "time": "2026-10-17T01:16:14.257727458Z"
+}

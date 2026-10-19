@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"t"}
+{"type":"turn.started"}
+{"type":"error","message":"Reconnecting... 1/5 (unexpected status 401 Unauthorized: kw-llm-broker: invalid run credential, url: http://127.0.0.1:8081/v1/responses)"}
+{"type":"error","message":"unexpected status 401 Unauthorized: kw-llm-broker: invalid run credential, url: http://127.0.0.1:8081/v1/responses"}
+{"type":"turn.failed","error":{"message":"unexpected status 401 Unauthorized: kw-llm-broker: invalid run credential, url: http://127.0.0.1:8081/v1/responses"}}

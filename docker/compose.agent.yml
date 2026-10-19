@@ -1,0 +1,144 @@
+# Underwatch - controlled execution environment for ONE supervised agent run.
+# Separate from compose.dev.yml (Neo4j etc.). Driven by scripts/agent-smoke.sh;
+# the server's run supervisor is expected to set the same variables.
+#
+#   kw-agent-internal  internal-only network (no route out); the agent lives here.
+#   kw-egress          ordinary bridge; only the egress proxy and the LLM broker
+#                      are attached to it.
+#   llm-broker         credential broker / LLM gateway (docker/llm-broker): the ONLY
+#                      holder of the real Claude credential and the agent's ONLY route
+#                      to the Claude API (POST /v1/messages[/count_tokens] only).
+#   egress-proxy       default-deny domain allowlist for anything else (the default
+#                      allowlist is EMPTY: a deny-all tripwire whose log the host keeps).
+#   agent              Claude Code headless, non-root, read-only policy, no host
+#                      evidence mounts; stream-json goes to STDOUT for the host.
+#
+# Required env (no defaults on purpose, so a mis-wired run fails closed):
+#   KW_POLICY_DIR        host dir mounted read-only at /etc/claude-code
+#   KW_HOOK_FORWARDER    host file mounted read-only at /opt/kw/kw-hook.mjs
+#   KW_WS_VOLUME         pre-populated docker volume mounted at /workspace
+#   KW_HOOK_VOLUME       docker volume for the (agent-reported) hook spool
+#   KW_BROKER_TOKEN_FILE        host file with the real Claude token, mounted read-only
+#                               into llm-broker ONLY (never into the agent)
+#   KW_BROKER_CLIENT_TOKEN_FILE host file with this run's placeholder credential
+#   KW_BROKER_CLIENT_TOKEN      the same placeholder value, given to the agent as its
+#                               CLAUDE_CODE_OAUTH_TOKEN. It is NOT a Claude credential: it is
+#                               only accepted by this run's broker on the internal network.
+# Optional: KW_EGRESS_ALLOWLIST, KW_AGENT_SUBNET, KW_TASK, KW_MODEL, KW_MAX_TURNS.
+# Secrets: the real Claude token never enters the agent container (env, argv, files);
+# `docker inspect` of the broker shows only the mount path, never the value.
+name: kw-agent
+
+x-kw-labels: &kw-labels
+  kw-dev: "1"
+
+networks:
+  kw-agent-internal:
+    name: kw-agent-internal
+    internal: true
+    labels: *kw-labels
+    ipam:
+      config:
+        - subnet: ${KW_AGENT_SUBNET:-10.231.7.0/24}
+  kw-egress:
+    name: kw-egress
+    labels: *kw-labels
+
+volumes:
+  workspace:
+    name: ${KW_WS_VOLUME:?KW_WS_VOLUME is required}
+    external: true
+  hooks:
+    name: ${KW_HOOK_VOLUME:?KW_HOOK_VOLUME is required}
+    external: true
+
+services:
+  egress-proxy:
+    build:
+      context: ./egress-proxy
+      labels: *kw-labels
+    image: kw-egress-proxy:1
+    container_name: kw-egress-proxy
+    labels: *kw-labels
+    environment:
+      KW_ALLOW_SUBNET: ${KW_AGENT_SUBNET:-10.231.7.0/24}
+    volumes:
+      - ${KW_EGRESS_ALLOWLIST:-./egress-proxy/allowlist.ere}:/etc/kw-egress/allowlist.ere:ro
+    networks:
+      kw-agent-internal: {}
+      kw-egress: {}
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    cap_add: [SETUID, SETGID]   # tinyproxy drops to user nobody
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 128m
+
+  llm-broker:
+    build:
+      context: ./llm-broker
+      labels: *kw-labels
+    image: kw-llm-broker:1
+    container_name: kw-llm-broker
+    labels: *kw-labels
+    volumes:
+      - ${KW_BROKER_TOKEN_FILE:?KW_BROKER_TOKEN_FILE is required}:/run/kw-secrets/claude-token:ro
+      - ${KW_BROKER_CLIENT_TOKEN_FILE:?KW_BROKER_CLIENT_TOKEN_FILE is required}:/run/kw-secrets/client-token:ro
+    networks:
+      kw-agent-internal: {}
+      kw-egress: {}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 256m
+
+  netguard:
+    # Build-only helper (verification/isolation.ts): joins the agent's netns with NET_ADMIN, installs the egress
+    # allowlist (lo + proxy + broker; gateway and everything else rejected), exits. Never runs as a service.
+    profiles: [agent]
+    build:
+      context: ./netguard
+    image: kw-netguard:1
+    command: ["-c", "true"]
+
+  agent:
+    profiles: [agent]          # only started via `docker compose run agent`
+    build:
+      context: ./agent
+      labels: *kw-labels
+    image: kw-agent:2.1.302
+    labels: *kw-labels
+    depends_on: [egress-proxy, llm-broker]
+    user: "1000:1000"
+    init: true
+    networks:
+      kw-agent-internal: {}
+    environment:
+      KW_TASK: ${KW_TASK:-}
+      KW_MODEL: ${KW_MODEL:-haiku}
+      KW_MAX_TURNS: ${KW_MAX_TURNS:-3}
+      KW_HOOK_LOG: /kw-hooks/hooks.ndjson
+      HTTPS_PROXY: http://kw-egress-proxy:8888
+      HTTP_PROXY: http://kw-egress-proxy:8888
+      https_proxy: http://kw-egress-proxy:8888
+      http_proxy: http://kw-egress-proxy:8888
+      NO_PROXY: localhost,127.0.0.1,kw-llm-broker
+      no_proxy: localhost,127.0.0.1,kw-llm-broker
+      # Claude API via the credential broker (Claude Code docs: llm-gateway,
+      # llm-gateway-protocol). The OAuth-token variable carries only the per-run
+      # placeholder so Claude Code keeps subscription (OAuth) request semantics; the
+      # broker swaps it for the real token. No real credential is ever set here.
+      ANTHROPIC_BASE_URL: http://kw-llm-broker:8080
+      CLAUDE_CODE_OAUTH_TOKEN: ${KW_BROKER_CLIENT_TOKEN:?KW_BROKER_CLIENT_TOKEN is required}
+    volumes:
+      - workspace:/workspace
+      - hooks:/kw-hooks
+      - ${KW_POLICY_DIR:?KW_POLICY_DIR is required}:/etc/claude-code:ro
+      - ${KW_HOOK_FORWARDER:?KW_HOOK_FORWARDER is required}:/opt/kw/kw-hook.mjs:ro
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 512
+    mem_limit: 2g

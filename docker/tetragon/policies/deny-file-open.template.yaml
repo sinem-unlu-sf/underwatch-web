@@ -1,0 +1,146 @@
+# Underwatch - deny-file-open ENFORCEMENT template
+#
+# Rendered by @kw/observer-tetragon applyEnforcement(); do not load directly.
+# BPF-LSM file_open hook + Override: the open() fails with EPERM before the file
+# is opened, so read(), mmap() and sendfile() on it are never reached (an
+# mmap read bypassed a read-time Sigkill policy in the spike; this open-time
+# hook was not bypassed by absolute, relative or symlink opens).
+# argError -1 = EPERM (the spike observed EPERM even for -13).
+#
+# Scope: matchNamespaces Pid In <pid-namespace inode of ONE container>, so other
+# containers on the same Docker Desktop VM are not affected (validated in the
+# spike and re-verified by the package's live test).
+#
+# Rename/link guard (added in review): open-time deny is PATH based, and in a live
+# test `mv /kw-canary /kw-moved; cat /kw-moved/secret.txt` read the canary. So the
+# same policy also denies inode_rename / inode_link (BPF-LSM; CONFIG_SECURITY_PATH
+# is off in linuxkit, so path_* hooks are unavailable) for every protected path,
+# everything under a protected prefix, and every ancestor directory. dentry paths
+# are relative to the MOUNT root, so applyEnforcement() adds mount-relative
+# variants for paths under the container's bind mounts. Tetragon v1.7 rejects
+# "Equal" on dentry args ("MatchArgs type dentry unsupported"), so exact names use
+# Prefix AND Postfix of the same list (ANDed; verified live). With several names this
+# can over-match a name that starts with one guarded name and ends with another -
+# only renames/links are over-blocked, never opens.
+#
+# Placeholders: __POLICY_NAME__, __PIDNS_INODE__, __EXACT_PATHS__, __PREFIX_PATHS__,
+# __RENAME_EXACT__, __RENAME_PREFIX__ (a selector block is dropped when its list is empty).
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "__POLICY_NAME__"
+spec:
+  lsmhooks:
+  - hook: "file_open"
+    args:
+    - index: 0
+      type: "file"
+    selectors:
+    #BEGIN_EXACT
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 0
+        operator: "Equal"
+        values:
+__EXACT_PATHS__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_EXACT
+    #BEGIN_PREFIX
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+__PREFIX_PATHS__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_PREFIX
+  - hook: "inode_rename"
+    args:
+    - index: 1
+      type: "dentry"
+    selectors:
+    #BEGIN_R1EXACT
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+__RENAME_EXACT__
+      - index: 1
+        operator: "Postfix"
+        values:
+__RENAME_EXACT__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_R1EXACT
+    #BEGIN_R1PREFIX
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 1
+        operator: "Prefix"
+        values:
+__RENAME_PREFIX__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_R1PREFIX
+  - hook: "inode_link"
+    args:
+    - index: 0
+      type: "dentry"
+    selectors:
+    #BEGIN_R2EXACT
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+__RENAME_EXACT__
+      - index: 0
+        operator: "Postfix"
+        values:
+__RENAME_EXACT__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_R2EXACT
+    #BEGIN_R2PREFIX
+    - matchNamespaces:
+      - namespace: Pid
+        operator: In
+        values:
+        - "__PIDNS_INODE__"
+      matchArgs:
+      - index: 0
+        operator: "Prefix"
+        values:
+__RENAME_PREFIX__
+      matchActions:
+      - action: Override
+        argError: -1
+    #END_R2PREFIX

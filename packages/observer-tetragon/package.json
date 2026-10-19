@@ -1,0 +1,25 @@
+{
+  "name": "@kw/observer-tetragon",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:live": "KW_TETRAGON_LIVE=1 vitest run src/live.test.ts"
+  },
+  "dependencies": {
+    "@kw/redaction": "workspace:*",
+    "@kw/schema": "workspace:*",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

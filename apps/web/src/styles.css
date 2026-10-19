@@ -1,0 +1,448 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/*
+ * Underwatch design tokens (UI-REDESIGN-PRD.md section 3, "Linear meets Vercel").
+ * See src/components/ds/README.md for usage rules.
+ *
+ * Canonical names (new):            Legacy aliases (kept so existing classes keep working):
+ *   bg        #09090B                 surface-0
+ *   surface   #111114                 surface-1
+ *   elevated  #1A1A1F                 surface-2   (surface-3 = hover on elevated)
+ *   text      #EDEDF0                 fg-0        (fg-1 = between text and secondary)
+ *   text-secondary #92929D            fg-2
+ *   accent    #8B8CF6                 focus
+ *   success   #47C9A5 (verified only) verified
+ *   caution   #F0B85A (uncertainty)   warn
+ *   danger    restrained red          risk / risk-solid
+ *
+ * Semantic hues: danger = meaningful security risk, caution = needs attention / uncertainty, success = ONLY verified
+ * positive outcomes, unknown = not observed / not established (always paired with the hatched treatment, never "safe").
+ * reported / observed distinguish the two provenance lanes. Colour is never the only signal: every status carries text
+ * (and a symbol where the ds components render one).
+ */
+@theme {
+  /* Core palette */
+  --color-bg: #09090b;
+  --color-surface: #111114;
+  --color-elevated: #1a1a1f;
+  --color-elevated-hover: #232329;
+  --color-text: #ededf0;
+  --color-text-secondary: #92929d;
+  --color-text-tertiary: #6e6e78;
+  --color-accent: #8b8cf6;
+  --color-accent-hover: #a2a3f8;
+  --color-success: #47c9a5;
+  --color-caution: #f0b85a;
+  --color-danger: #ef6b64;
+  --color-danger-solid: #b3362f;
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Legacy aliases (do not remove: used across pages) */
+  --color-surface-0: var(--color-bg);
+  --color-surface-1: var(--color-surface);
+  --color-surface-2: var(--color-elevated);
+  --color-surface-3: var(--color-elevated-hover);
+  --color-fg-0: var(--color-text);
+  --color-fg-1: #b9b9c2;
+  --color-fg-2: var(--color-text-secondary);
+  --color-fg-disabled: #55555e;
+  --color-line: var(--color-border);
+  --color-line-strong: var(--color-border-strong);
+  --color-risk: var(--color-danger);
+  --color-risk-solid: var(--color-danger-solid);
+  --color-warn: var(--color-caution);
+  --color-verified: var(--color-success);
+  --color-unknown: #a3a8b6;
+  --color-reported: #d3a6e6;
+  --color-observed: #67b7e3;
+  --color-focus: var(--color-accent);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  /* Shadows: very subtle; the "raised" pair is the only (restrained) neumorphic treatment, for elevated surfaces. */
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-overlay: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 8px 28px rgba(0, 0, 0, 0.5);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --font-sans: "Geist Variable", "Geist", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+/* Non-utility tokens (plain CSS variables). */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --dur-fast: 120ms;
+  --dur-base: 160ms;
+  --dur-slow: 220ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+  }
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  a {
+    color: inherit;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+  input,
+  select,
+  textarea {
+    color-scheme: dark;
+  }
+  /* Motion is opt-out: honour reduced-motion everywhere. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0ms !important;
+      animation-duration: 0ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* "Unknown / not observed / not established": dashed outline + diagonal hatch. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-unknown) 14%, transparent) 0 4px,
+      transparent 4px 8px
+    );
+    border: 1px dashed color-mix(in srgb, var(--color-unknown) 70%, transparent);
+  }
+
+  /* Form controls */
+  .field {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-size: 12.5px;
+    color: var(--color-text);
+    min-height: 30px;
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+  }
+  .field::placeholder {
+    color: var(--color-text-tertiary);
+  }
+  .field:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .field:focus-visible {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+  .field:disabled {
+    color: var(--color-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Buttons: .btn (= secondary) | .btn-primary | .btn-ghost | .btn-danger ; sizes .btn-sm | .btn-lg */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-elevated);
+    color: var(--color-text);
+    border-radius: var(--radius-sm);
+    padding: 4px 12px;
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.2;
+    min-height: 30px;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: var(--shadow-subtle);
+    transition:
+      background-color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--color-elevated-hover);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .btn:active:not(:disabled),
+  .btn[aria-pressed="true"] {
+    transform: translateY(0.5px);
+    background: var(--color-surface);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    color: var(--color-fg-disabled);
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .btn[aria-busy="true"] {
+    cursor: progress;
+  }
+  .btn-primary {
+    background: var(--color-text);
+    color: var(--color-bg);
+    border-color: var(--color-text);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #ffffff;
+    border-color: #ffffff;
+  }
+  .btn-primary:active:not(:disabled) {
+    background: #d6d6dc;
+  }
+  .btn-primary:disabled {
+    background: var(--color-elevated);
+    color: var(--color-fg-disabled);
+    border-color: var(--color-border);
+  }
+  .btn-secondary {
+    /* same as .btn; explicit name for readability */
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--color-fg-1);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-elevated);
+    border-color: transparent;
+    color: var(--color-text);
+  }
+  .btn-ghost:disabled {
+    background: transparent;
+    border-color: transparent;
+  }
+  .btn-danger {
+    background: color-mix(in srgb, var(--color-danger) 12%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-danger) 45%, transparent);
+    color: var(--color-danger);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-danger) 20%, var(--color-surface));
+    border-color: color-mix(in srgb, var(--color-danger) 65%, transparent);
+  }
+  .btn-sm {
+    min-height: 26px;
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+  .btn-lg {
+    min-height: 36px;
+    padding: 6px 16px;
+    font-size: 13.5px;
+  }
+  .btn-icon {
+    padding: 0;
+    width: 30px;
+    min-width: 30px;
+  }
+  .btn-icon.btn-sm {
+    width: 26px;
+    min-width: 26px;
+  }
+
+  .skeleton {
+    background: var(--color-elevated);
+    border-radius: 4px;
+    animation: kw-skeleton 1.6s var(--ease) infinite;
+  }
+  @keyframes kw-skeleton {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @keyframes kw-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes kw-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(2px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .kw-spin {
+    animation: kw-spin 0.8s linear infinite;
+  }
+  .kw-fade-in {
+    animation: kw-fade-in var(--dur-base) var(--ease) both;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+  }
+
+  /* Data tables: table.data (legacy name) and the DataTable component share these styles. */
+  table.data {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12.5px;
+  }
+  table.data th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--color-border-strong);
+    white-space: nowrap;
+    background: var(--color-surface);
+  }
+  table.data.sticky thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  table.data td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+  table.data tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  table.data tbody tr {
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+  table.data tbody tr:hover {
+    background: color-mix(in srgb, var(--color-elevated) 70%, transparent);
+  }
+  table.data tbody tr[aria-selected="true"],
+  table.data tbody tr[data-selected="true"] {
+    background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+    box-shadow: inset 2px 0 0 var(--color-accent);
+  }
+  table.data th.num,
+  table.data td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Elevated surface (restrained neumorphism): use only for overlays, popovers, raised controls. */
+  .surface-raised {
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Code: restrained token colours (no neon). */
+  .code-block {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre;
+    tab-size: 2;
+    color: var(--color-fg-1);
+  }
+  .code-block.wrap {
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+/* Landing hero: two small, slow-drifting glows behind the headline (decorative only). */
+.kw-hero-orb {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 9999px;
+  filter: blur(56px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.kw-hero-orb-a {
+  background: radial-gradient(circle, rgba(139, 140, 246, 0.6) 0%, rgba(139, 140, 246, 0) 70%);
+  animation: kw-orb-a 14s ease-in-out infinite alternate;
+}
+.kw-hero-orb-b {
+  width: 190px;
+  height: 190px;
+  background: radial-gradient(circle, rgba(71, 201, 165, 0.38) 0%, rgba(71, 201, 165, 0) 70%);
+  animation: kw-orb-b 18s ease-in-out infinite alternate;
+}
+@keyframes kw-orb-a {
+  from { transform: translate(-90px, -18px) scale(1); }
+  to { transform: translate(70px, 22px) scale(1.12); }
+}
+@keyframes kw-orb-b {
+  from { transform: translate(80px, 28px) scale(1); }
+  to { transform: translate(-60px, -24px) scale(0.9); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kw-hero-orb { animation: none; }
+}

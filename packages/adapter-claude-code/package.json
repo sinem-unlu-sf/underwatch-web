@@ -1,0 +1,29 @@
+{
+  "name": "@kw/adapter-claude-code",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Underwatch Claude Code agent adapter (agent-REPORTED side): hook forwarder, settings generator, parsers for hook log / transcript / stream-json, headless command builder.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "kw-hook": "./bin/kw-hook.mjs"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "import-captures": "node scripts/import-captures.mjs"
+  },
+  "dependencies": {
+    "@kw/redaction": "workspace:^",
+    "@kw/schema": "workspace:^",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

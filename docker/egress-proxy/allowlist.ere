@@ -1,0 +1,16 @@
+# Underwatch default egress allowlist for the AGENT path (one anchored ERE per
+# line, matched against the request host by tinyproxy; everything else is denied).
+#
+# EMPTY ON PURPOSE (2026-10-17, credential-broker remediation): the agent reaches the
+# Claude API ONLY through the credential broker (docker/llm-broker) on its internal
+# network, via ANTHROPIC_BASE_URL. The broker holds the real token; the agent holds a
+# per-run placeholder. Allowing api.anthropic.com here would give agent-controlled
+# code a second, unbrokered route to the API, so it is no longer allowed.
+# Previously allowed and removed: api.anthropic.com, platform.claude.com, claude.ai.
+# Verified 2026-10-17 with Claude Code 2.1.302 + a `claude setup-token` token behind
+# the broker: a headless haiku run succeeded with NO proxy at all (only
+# POST /v1/messages reached the broker), so none of those hosts is needed.
+# The proxy stays in place as a deny-all tripwire: any other egress attempt by the
+# agent is refused and logged in the host-held proxy log.
+# Add a destination here only if a run provably needs it, and never a host that
+# accepts Anthropic credentials.

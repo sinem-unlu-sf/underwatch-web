@@ -1,0 +1,55 @@
+{
+ "process_kprobe": {
+  "process": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjU5MTcwMjE1MDg1NTo4NDUz",
+   "pid": 8453,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/tmp/w/workload.sh",
+   "arguments": "/tmp/w/workload.sh",
+   "flags": "execve rootcwd clone inInitTree",
+   "start_time": "2026-10-17T01:14:33.603676093Z",
+   "auid": 4294967295,
+   "docker": "864fea5e5dc0f3b3643e8c840e5c25d",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjMxNTQxMDAwMDAwMDo1Mzk3",
+   "refcnt": 1,
+   "tid": 8453,
+   "in_init_tree": true
+  },
+  "parent": {
+   "exec_id": "NmU3MGU2YzIzNWE1OjMxNTQxMDAwMDAwMDo1Mzk3",
+   "pid": 5397,
+   "uid": 0,
+   "cwd": "/",
+   "binary": "/usr/bin/bash",
+   "arguments": "-c \"cp -r /src /tmp/w; echo hello > /vol/vol-read.txt; while true; do /tmp/w/workload.sh >/dev/null; echo x >> /vol/vol-write.txt; cat /vol/vol-read.txt >/dev/null; sleep 2; done\"",
+   "flags": "procFS rootcwd inInitTree",
+   "start_time": "2026-10-17T01:09:57.311780377Z",
+   "auid": 4294967295,
+   "docker": "864fea5e5dc0f3b3643e8c840e5c25d",
+   "parent_exec_id": "NmU3MGU2YzIzNWE1OjMxNTM5MDAwMDAwMDo1Mzc1",
+   "tid": 5397,
+   "in_init_tree": true
+  },
+  "function_name": "security_file_permission",
+  "args": [
+   {
+    "file_arg": {
+     "path": "/tmp/w/.env",
+     "permission": "-rw-r--r--"
+    }
+   },
+   {
+    "int_arg": 4
+   }
+  ],
+  "return": {
+   "int_arg": 0
+  },
+  "action": "KPROBE_ACTION_POST",
+  "policy_name": "kw-canary-observe",
+  "return_action": "KPROBE_ACTION_POST"
+ },
+ "node_name": "6e70e6c235a5",
+ "time": "2026-10-17T01:14:33.604658968Z"
+}
