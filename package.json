@@ -14,6 +14,7 @@
     "test": "pnpm -r test",
     "seed:fixtures": "pnpm --filter @kw/server seed:fixtures",
     "open": "node apps/server/scripts/open.mjs",
-    "demo:reset": "pnpm --filter @kw/server demo:reset"
+    "demo:reset": "pnpm --filter @kw/server demo:reset",
+    "beta:export": "node --env-file=.env.beta scripts/beta-signups-export.ts"
   }
 }
