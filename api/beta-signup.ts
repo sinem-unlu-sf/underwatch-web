@@ -2,8 +2,11 @@
  * Beta sign-up endpoint for the static landing page (Vercel Function: POST /api/beta-signup).
  *
  * Storage: Upstash Redis over its REST API (add "Upstash for Redis" from the Vercel Marketplace; it sets
- * KV_REST_API_URL / KV_REST_API_TOKEN). Each sign-up is one key, `beta:signup:<email>`, written with NX so a repeat
- * sign-up keeps the original record, plus a `beta:signups` sorted set (score = sign-up time) for exporting the list.
+ * KV_REST_API_URL / KV_REST_API_TOKEN). Personal data never reaches Redis in the clear: each record is encrypted with
+ * AES-256-GCM and keyed by an HMAC of the email, both derived (HKDF) from the BETA_DATA_KEY secret (32 random bytes,
+ * base64). The key is `underwatch:beta:signup:<hmac>` (namespaced so a shared database is safe), written with NX so
+ * a repeat sign-up keeps the original record, plus an `underwatch:beta:signups` sorted set (score = sign-up time). Without BETA_DATA_KEY nothing is stored.
+ * Export (decrypts locally): `node scripts/beta-signups-export.ts` with the same three env vars.
  *
  * Confirmation: when RESEND_API_KEY and BETA_FROM_EMAIL are set, a new sign-up gets a confirmation email right
  * away. Without them the sign-up is still stored and the page still confirms it on screen.
@@ -19,10 +22,12 @@ const processEnv: Record<string, string | undefined> =
 
 export type SignupKind = "individual" | "company";
 
+/** Individuals: first name, last name, email. Companies: company name, work email, and the contact person's name. */
 export type BetaSignup = {
-  email: string;
   kind: SignupKind;
-  name: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
   company: string | null;
   createdAt: string;
 };
@@ -45,11 +50,14 @@ export function parseSignup(body: unknown, now = new Date()): Parsed {
   const email = str(b.email, 254).toLowerCase();
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Enter a valid email address." };
   const kind: SignupKind = b.kind === "company" ? "company" : "individual";
+  const firstName = str(b.firstName, 80);
+  const lastName = str(b.lastName, 80);
+  if (!firstName || !lastName) return { ok: false, error: "Enter your first and last name." };
   const company = str(b.company, 120);
   if (kind === "company" && !company) return { ok: false, error: "Enter your company name." };
   return {
     ok: true,
-    signup: { email, kind, name: str(b.name, 120) || null, company: kind === "company" ? company : null, createdAt: now.toISOString() },
+    signup: { kind, firstName, lastName, email, company: kind === "company" ? company : null, createdAt: now.toISOString() },
   };
 }
 
@@ -68,7 +76,7 @@ export async function handleBetaSignup(request: Request, store: SignupStore | nu
   // Bots get a normal-looking success so they do not retry; nothing is stored.
   if (!parsed.ok) return parsed.bot ? json(200, { status: "created", emailed: false }) : json(400, { error: parsed.error });
   if (!store) {
-    console.error("beta-signup: no store configured (set KV_REST_API_URL and KV_REST_API_TOKEN)");
+    console.error("beta-signup: no store configured (set KV_REST_API_URL, KV_REST_API_TOKEN and BETA_DATA_KEY)");
     return json(503, { error: "Sign-ups are not open yet. Please try again later." });
   }
   let created: boolean;
@@ -89,19 +97,72 @@ export async function handleBetaSignup(request: Request, store: SignupStore | nu
   return json(200, { status: created ? "created" : "exists", emailed });
 }
 
-/** Upstash Redis REST store (env names from the Vercel Marketplace integration, or Upstash's own). */
+/** Redis key names, namespaced so the database can be shared with other projects. */
+export const SIGNUP_KEY = "underwatch:beta:signup";
+export const SIGNUP_INDEX = "underwatch:beta:signups";
+
+const enc = new TextEncoder();
+const b64 = (bytes: ArrayBuffer | Uint8Array) => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+const unb64 = (text: string) => Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+
+export type SignupKeys = { aes: CryptoKey; index: CryptoKey };
+
+/** Derives the record-encryption key and the email-index key from BETA_DATA_KEY (base64, 32 bytes). */
+export async function signupKeys(secret: string): Promise<SignupKeys> {
+  const raw = unb64(secret.trim());
+  if (raw.length < 32) throw new Error("BETA_DATA_KEY must be at least 32 random bytes, base64-encoded");
+  const master = await crypto.subtle.importKey("raw", raw, "HKDF", false, ["deriveKey"]);
+  type Usages = Parameters<typeof crypto.subtle.deriveKey>[4];
+  const derive = (info: string, alg: { name: string; length: number; hash?: string }, usages: Usages) =>
+    crypto.subtle.deriveKey({ name: "HKDF", hash: "SHA-256", salt: new Uint8Array(32), info: enc.encode(info) }, master, alg, false, usages);
+  return {
+    aes: await derive("underwatch-beta-signup-record-v1", { name: "AES-GCM", length: 256 }, ["encrypt", "decrypt"]),
+    index: await derive("underwatch-beta-signup-index-v1", { name: "HMAC", hash: "SHA-256", length: 256 }, ["sign"]),
+  };
+}
+
+/** Stable, non-reversible id for an email (dedupe without storing the address in a key). */
+export async function emailId(keys: SignupKeys, email: string): Promise<string> {
+  const sig = await crypto.subtle.sign("HMAC", keys.index, enc.encode(email));
+  return Array.from(new Uint8Array(sig), (x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+type SealedSignup = { v: 1; iv: string; ct: string; createdAt: string };
+
+export async function sealSignup(keys: SignupKeys, signup: BetaSignup, id: string): Promise<SealedSignup> {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: enc.encode(id) }, keys.aes, enc.encode(JSON.stringify(signup)));
+  return { v: 1, iv: b64(iv), ct: b64(ct), createdAt: signup.createdAt };
+}
+
+export async function openSignup(keys: SignupKeys, sealed: SealedSignup, id: string): Promise<BetaSignup> {
+  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(sealed.iv), additionalData: enc.encode(id) }, keys.aes, unb64(sealed.ct));
+  return JSON.parse(new TextDecoder().decode(pt)) as BetaSignup;
+}
+
+/** Upstash Redis REST store (env names from the Vercel Marketplace integration, or Upstash's own); null unless fully configured. */
 export function upstashStoreFromEnv(env = processEnv): SignupStore | null {
   const url = env.KV_REST_API_URL ?? env.UPSTASH_REDIS_REST_URL;
   const token = env.KV_REST_API_TOKEN ?? env.UPSTASH_REDIS_REST_TOKEN;
+  const secret = env.BETA_DATA_KEY;
   if (!url || !token) return null;
+  if (!secret) {
+    console.error("beta-signup: BETA_DATA_KEY is not set; refusing to store personal data unencrypted");
+    return null;
+  }
+  let keys: Promise<SignupKeys> | null = null;
   return {
     async save(signup) {
+      keys ??= signupKeys(secret);
+      const k = await keys;
+      const id = await emailId(k, signup.email);
+      const sealed = await sealSignup(k, signup, id);
       const res = await fetch(`${url.replace(/\/$/, "")}/multi-exec`, {
         method: "POST",
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
         body: JSON.stringify([
-          ["SET", `beta:signup:${signup.email}`, JSON.stringify(signup), "NX"],
-          ["ZADD", "beta:signups", "NX", String(Date.parse(signup.createdAt)), signup.email],
+          ["SET", `${SIGNUP_KEY}:${id}`, JSON.stringify(sealed), "NX"],
+          ["ZADD", SIGNUP_INDEX, "NX", String(Date.parse(signup.createdAt)), id],
         ]),
       });
       if (!res.ok) throw new Error(`Upstash responded ${res.status}`);
@@ -119,7 +180,7 @@ export function resendMailerFromEnv(env = processEnv): Mailer | null {
   const from = env.BETA_FROM_EMAIL;
   if (!key || !from) return null;
   return async (signup) => {
-    const greeting = signup.name ? `Hi ${signup.name},` : "Hi,";
+    const greeting = `Hi ${signup.firstName},`;
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
