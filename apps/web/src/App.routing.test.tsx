@@ -41,13 +41,12 @@ describe("app routing", () => {
     renderAt("/");
     expect(screen.getByTestId("landing-page")).toBeInTheDocument();
     expect(screen.queryByTestId("app-shell")).toBeNull();
-    expect(screen.getByRole("heading", { level: 1, name: "Underwatch" })).toBeInTheDocument();
-    // First screen: only the headline and one sentence - no buttons, no screenshot.
+    expect(screen.getByRole("heading", { level: 1, name: "Your AI agents work. Under our watch." })).toBeInTheDocument();
+    // First screen: headline, CTAs and the four capability cards (linking to their sections) - no screenshot.
     const hero = screen.getByRole("heading", { level: 1 }).closest("section")!;
-    expect(within(hero).queryAllByRole("link")).toHaveLength(0);
     expect(within(hero).queryAllByRole("img")).toHaveLength(0);
-    expect(within(hero).getByText("Your AI agents work. Under our watch.")).toBeInTheDocument();
-    // The CTAs live in the section right below (revealed on scroll).
+    expect(within(hero).getByText("Don't just trust what your coding agent says it did.")).toBeInTheDocument();
+    expect(within(hero).getByRole("link", { name: /Observe Independent evidence/ })).toHaveAttribute("href", "#feature-observe");
     const start = screen.getByRole("region", { name: "Get started" });
     expect(within(start).getByRole("link", { name: "Sign up" })).toHaveAttribute("href", "/signup");
     expect(within(start).getByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");

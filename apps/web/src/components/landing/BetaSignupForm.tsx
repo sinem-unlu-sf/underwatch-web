@@ -12,6 +12,8 @@ export function BetaSignupForm() {
   const [kind, setKind] = useState<Kind>("individual");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export function BetaSignupForm() {
       const res = await fetch("/api/beta-signup", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ kind, email, company: kind === "company" ? company : "", website }),
+        body: JSON.stringify({ kind, firstName, lastName, email, company: kind === "company" ? company : "", website }),
       });
       const body = (await res.json().catch(() => ({}))) as { status?: Result["status"]; emailed?: boolean; error?: string };
       if (!res.ok || !body.status) throw new Error(body.error ?? "Something went wrong. Please try again.");
@@ -84,15 +86,43 @@ export function BetaSignupForm() {
           />
         </label>
       )}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block">
+          <span className="sr-only">{kind === "company" ? "Your first name" : "First name"}</span>
+          <input
+            className={input}
+            name="firstName"
+            autoComplete="given-name"
+            placeholder={kind === "company" ? "Your first name" : "First name"}
+            required
+            maxLength={80}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+        </label>
+        <label className="block">
+          <span className="sr-only">{kind === "company" ? "Your last name" : "Last name"}</span>
+          <input
+            className={input}
+            name="lastName"
+            autoComplete="family-name"
+            placeholder={kind === "company" ? "Your last name" : "Last name"}
+            required
+            maxLength={80}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+        </label>
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row">
         <label className="block flex-1">
-          <span className="sr-only">Email</span>
+          <span className="sr-only">{kind === "company" ? "Company email" : "Email"}</span>
           <input
             className={input}
             type="email"
             name="email"
             autoComplete="email"
-            placeholder={kind === "company" ? "Work email" : "Email"}
+            placeholder={kind === "company" ? "Company email" : "Email"}
             required
             maxLength={254}
             value={email}
@@ -102,7 +132,7 @@ export function BetaSignupForm() {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-10 shrink-0 items-center justify-center rounded-md bg-[#EDEDF0] px-4 text-[14px] font-medium text-[#09090B] transition-colors duration-150 hover:bg-white disabled:opacity-60"
+          className="inline-flex h-10 shrink-0 items-center justify-center rounded-md border border-[#5A80EE] bg-[#4169E1] px-4 text-[14px] font-medium text-white shadow-[0_8px_24px_rgba(65,105,225,0.28)] transition-colors duration-150 hover:bg-[#4D75EA] disabled:opacity-60"
         >
           {pending ? "Joining…" : BETA_CTA}
         </button>
@@ -123,7 +153,7 @@ export function BetaSignupForm() {
           {error}
         </p>
       )}
-      <p className="text-center text-[12px] text-text-tertiary">We only use your email to contact you about the Underwatch beta.</p>
+      <p className="text-center text-[12px] text-text-tertiary">We only use these details to contact you about the Underwatch beta. They are stored encrypted.</p>
     </form>
   );
 }

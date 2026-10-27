@@ -14,3 +14,4 @@ data/evidence/
 
 # Local beta sign-ups (vite dev/preview stand-in for Upstash)
 .beta-signups.local.json
+.vercel
