@@ -129,11 +129,6 @@ const byId = (id: CategoryId) => NODES.find((n) => n.id === id);
 
 const TONE_LABEL: Record<Tone, string> = { reported: "agent's word", observed: "recorded", derived: "found by Underwatch" };
 
-const MODE_LINE: Record<Mode, string> = {
-  reported: "Only the agent's own account. Nothing here has been checked against what actually ran.",
-  observed: "Underwatch adds its own record, which the agent cannot edit, and the gaps become findings.",
-};
-
 export function EvidenceRadar() {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const [mode, setMode] = useState<Mode>("observed");
@@ -222,7 +217,6 @@ export function EvidenceRadar() {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-[12.5px] leading-relaxed text-[#A2AEC3]">{MODE_LINE[mode]}</p>
 
       <svg viewBox="-220 -205 440 410" aria-hidden="true" className="mx-auto mt-2 block h-auto w-full max-w-[440px]">
         <defs>
