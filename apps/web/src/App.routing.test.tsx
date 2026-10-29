@@ -57,7 +57,7 @@ describe("app routing", () => {
     expect(imgs.length).toBeGreaterThanOrEqual(5);
     for (const img of imgs) expect(img.getAttribute("alt")?.length ?? 0).toBeGreaterThan(20);
     expect(screen.queryAllByText(/^Real product screenshot/)).toHaveLength(0);
-    for (const name of ["Neo4j", "ai& Inference", "Cilium Tetragon", "Claude Code"]) expect(screen.getByText(name)).toBeInTheDocument();
+    for (const name of ["Neo4j", "ai& Inference", "Cilium Tetragon"]) expect(screen.queryByText(name)).not.toBeInTheDocument();
   });
 
   it("/overview renders the Overview inside the app shell", () => {

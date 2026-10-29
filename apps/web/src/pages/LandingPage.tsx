@@ -6,7 +6,7 @@ import { IntroAnimation, shouldPlayIntro } from "../components/landing/IntroAnim
 import { OrbitalEvidence } from "../components/landing/OrbitalEvidence";
 import { EyeFlowerCluster } from "../components/landing/LandingAccents";
 import { ChecklistCharacter, CompareCharacter, InvestigateCharacter, ObserverCharacter, SafeguardCharacter } from "../components/landing/LandingCharacters";
-import { BETA_CTA, BETA_HREF, BUILT_WITH, FEATURES, FIXTURE_DEMO_HREF, HERO_SHOT, LANDING_ONLY, LIVE_DEMO_HREF, STEPS, type LandingShot } from "../components/landing/landingContent";
+import { BETA_CTA, BETA_HREF, FEATURES, FIXTURE_DEMO_HREF, HERO_SHOT, LANDING_ONLY, LIVE_DEMO_HREF, STEPS, type LandingShot } from "../components/landing/landingContent";
 import { LogoMark } from "../components/shell/nav";
 
 /**
@@ -43,7 +43,6 @@ export function LandingPage() {
         <ComparisonSection />
         <FeatureSections />
         <HowItWorks />
-        <BuiltWith />
         <FinalCta />
       </main>
       <LandingFooter />
@@ -275,7 +274,7 @@ function HeroLight() {
 
 const HERO_CARDS = [
   { n: "01", title: "Observe", body: "Independent evidence of what the agent actually did.", href: "#feature-observe" },
-  { n: "02", title: "Compare", body: "What the agent reported versus what observers recorded.", href: "#feature-compare" },
+  { n: "02", title: "Compare", body: "What the agent said versus what actually happened.", href: "#feature-compare" },
   { n: "03", title: "Investigate", body: "Trace events, files, findings and relationships through evidence.", href: "#feature-investigate" },
   { n: "04", title: "Safeguard", body: "Turn incidents into reviewed protections and re-test them.", href: "#feature-safeguards" },
 ];
@@ -331,7 +330,7 @@ function Hero({ ready }: { ready: boolean }) {
               <p className="mt-3 text-[12px] text-text-tertiary">
                 The live demo opens a real finding from a supervised run. Fixture example:{" "}
                 <Link to={FIXTURE_DEMO_HREF} className="underline decoration-[#25334B] underline-offset-2 hover:text-text">
-                  fx-04 .env read via Bash
+                  fx-04 example finding
                 </Link>
                 .
               </p>
@@ -397,7 +396,7 @@ function ComparisonSection() {
       <div className={`${wrap} py-20 sm:py-28`}>
         <Reveal>
           <SectionHeading id="problem-title" eyebrow="Why Underwatch" title="What your agent reports isn't the whole story." center>
-            Underwatch connects independent observations to show what actually happened, and what needs your attention.
+            Underwatch shows what actually happened, and what needs your attention.
           </SectionHeading>
         </Reveal>
         <OrbitalEvidence />
@@ -407,13 +406,13 @@ function ComparisonSection() {
 }
 
 const OBSERVERS = [
-  { name: "Kernel · Cilium Tetragon", detail: "Process exec, file open and network connect events" },
-  { name: "Network · Egress proxy", detail: "A log entry for every outbound request" },
-  { name: "Repository · Git observer", detail: "The real repository changes" },
+  { name: "Files", detail: "What the agent read and changed" },
+  { name: "Commands", detail: "What actually ran" },
+  { name: "Network", detail: "Where requests went" },
 ];
-const GRAPH_NODES = ["Findings", "Rules", "Agent actions", "Observed events", "Processes", "Files", "Safeguards"];
+const GRAPH_NODES = ["Findings", "Rules", "Agent actions", "Recorded activity", "Files", "Safeguards"];
 const SAFEGUARD_FLOW = ["Finding", "Proposed safeguard", "Your review (diff)", "Re-test", "Recorded result"];
-const SAFEGUARD_KINDS = ["CLAUDE.md instruction", "Claude Code permission rule", "Tetragon kernel block"];
+const SAFEGUARD_KINDS = ["Agent instructions", "Permission rules", "System-level blocks"];
 
 function FeatureExtra({ id }: { id: string }) {
   if (id === "observe") {
@@ -435,12 +434,12 @@ function FeatureExtra({ id }: { id: string }) {
     return (
       <div className="kw-split mt-6 grid grid-cols-2 overflow-hidden rounded-lg">
         <div className="p-3.5">
-          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-[#D3A6E6]">Reported</p>
-          <p className="mt-1 text-[13.5px] text-text-secondary">The agent's final report, claim by claim</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-[#D3A6E6]">Agent says</p>
+          <p className="mt-1 text-[13.5px] text-text-secondary">The agent's own account of its work</p>
         </div>
         <div className="border-l border-[#25334B] p-3.5">
-          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-[#67B7E3]">Observed</p>
-          <p className="mt-1 text-[13.5px] text-text-secondary">Kernel, proxy and git observers</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-[#67B7E3]">Underwatch saw</p>
+          <p className="mt-1 text-[13.5px] text-text-secondary">An independent record of what happened</p>
         </div>
       </div>
     );
@@ -521,7 +520,7 @@ function FeatureSections() {
                 <ul className="mt-6 space-y-2.5 text-[14px] text-[#C9D2E3]">
                   {f.points.map((p) => (
                     <li key={p} className="flex gap-2.5">
-                      <span aria-hidden="true" className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${p.toLowerCase().startsWith("kernel enforcement: verified") ? "bg-[#47C9A5]" : "bg-[#4F7BEA]"}`} />
+                      <span aria-hidden="true" className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${p.toLowerCase().startsWith("safeguards tested") ? "bg-[#47C9A5]" : "bg-[#4F7BEA]"}`} />
                       <span>{p}</span>
                     </li>
                   ))}
@@ -574,37 +573,6 @@ function HowItWorks() {
             </li>
           ))}
         </ol>
-      </div>
-    </section>
-  );
-}
-
-const TECH_NOTES: Record<string, string> = {
-  "Cilium Tetragon": "eBPF kernel observer for process, file and network events.",
-  Neo4j: "Evidence graph linking findings, events, files and rules.",
-  "ai& Inference": "Powers Ask Witness answers, checked against Underwatch records.",
-  "Claude Code": "The coding agent Underwatch supervises today.",
-};
-
-function BuiltWith() {
-  return (
-    <section aria-labelledby="built-title" className="kw-section relative">
-      <div className={`${wrap} relative py-16 sm:py-20`}>
-        <EyeFlowerCluster variant="c" className="kw-accent kw-accent-lg kw-accent-built" />
-        <Reveal>
-          <p className="kw-eyebrow">Built with</p>
-          <h2 id="built-title" className="mt-3 text-[22px] font-semibold tracking-[-0.02em] text-text sm:text-[26px]">
-            Built on observable evidence.
-          </h2>
-        </Reveal>
-        <ul className="mt-8 grid gap-px overflow-hidden rounded-xl border border-[#1C273B] bg-[#1C273B] sm:grid-cols-2 lg:grid-cols-4">
-          {BUILT_WITH.map((b) => (
-            <li key={b} className="bg-[#070D1A]/90 p-5">
-              <p className="text-[16px] font-medium tracking-tight text-text">{b}</p>
-              {TECH_NOTES[b] && <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">{TECH_NOTES[b]}</p>}
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

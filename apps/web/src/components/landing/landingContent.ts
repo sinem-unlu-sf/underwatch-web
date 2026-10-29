@@ -23,7 +23,7 @@ export type LandingShot ={ src: string; alt: string; caption: string; width: num
 
 export const HERO_SHOT: LandingShot = {
   src: "/landing/hero-finding.webp",
-  alt: "Underwatch finding page: a protected .env file reached the agent via Bash despite policy rule R1, with a short read, the agent's report next to what the kernel saw, and the Neo4j evidence path.",
+  alt: "Underwatch finding page for a live supervised coding agent session, with a short read of what went wrong and the evidence behind it.",
   caption: "Real product screenshot: a live finding from a supervised Claude Code run (synthetic secret).",
   width: 1800,
   height: 1125,
@@ -36,34 +36,34 @@ export const FEATURES: Feature[] = [
     id: "observe",
     eyebrow: "Observe independently",
     title: "Evidence that does not come from the agent.",
-    body: "Underwatch records what actually happened while a coding agent works, from sources the agent cannot edit.",
+    body: "Underwatch keeps its own record of what a coding agent did, so you are not relying on the agent's word.",
     points: [
-      "Cilium Tetragon kernel events: process exec, file open, network connect",
-      "Egress proxy log for every outbound request",
-      "Git observer for real repository changes",
+      "Files, commands and network activity, recorded as they happen",
+      "A record the agent cannot edit",
+      "Works alongside the agent you already use",
     ],
     shot: {
       src: "/landing/evidence-events.webp",
-      alt: "Evidence Explorer listing recorded events with their basis (reported, observed, derived), source such as process_tracer or git_observer, event type and outcome.",
-      caption: "Real product screenshot: Evidence Explorer, every event labelled reported, observed or derived.",
+      alt: "Evidence Explorer listing the recorded activity for a session, with each event's type and outcome.",
+      caption: "Real product screenshot: Evidence Explorer for a session.",
       width: 1800,
       height: 1125,
     },
   },
   {
     id: "compare",
-    eyebrow: "Compare reported vs observed",
-    title: "What the agent said, next to what the kernel saw.",
-    body: "Each claim in the agent's final report is matched against independent observations. Gaps become findings with severity, confidence and the evidence ids behind them.",
+    eyebrow: "Catch the gaps",
+    title: "What the agent said, next to what actually happened.",
+    body: "When an agent's account of its work does not hold up, Underwatch raises a finding with a severity, a confidence level and the evidence behind it.",
     points: [
-      "Agent reported and independently observed, side by side",
+      "Clear findings, ranked by severity",
       "Security outcome kept separate from task outcome",
       "Unknown stays unknown: never shown as safe",
     ],
     shot: {
       src: "/landing/compare.webp",
-      alt: "Reported vs observed panel: each agent-reported tool call on the left, the independently observed evidence on the right, with unmatched rows hatched.",
-      caption: "Real product screenshot: Reported vs observed for a live finding.",
+      alt: "Finding comparison panel showing where the agent's account and the recorded activity differ.",
+      caption: "Real product screenshot: comparison view for a live finding.",
       width: 1800,
       height: 1125,
     },
@@ -71,17 +71,17 @@ export const FEATURES: Feature[] = [
   {
     id: "investigate",
     eyebrow: "Investigate",
-    title: "Follow the evidence graph. Ask questions in plain words.",
-    body: "Findings, events, files and rules live in a Neo4j evidence graph. Ask Witness answers from Underwatch records via ai& Inference, and every citation is checked against the records sent.",
+    title: "Trace any finding. Ask questions in plain words.",
+    body: "Every finding links back to the activity that caused it. Ask Witness answers your questions from Underwatch records, with citations you can check.",
     points: [
-      "Neo4j path from the finding to the exact kernel event",
+      "From a finding to the exact action behind it",
       "Ask Witness: AI interprets, records establish the facts",
-      "Claim labels assigned by Underwatch, not by the model",
+      "Every answer cites its sources",
     ],
     shot: {
       src: "/landing/evidence-graph.webp",
-      alt: "Neo4j evidence graph for the fx-04 fixture finding, linking it to the rule, agent actions, observed events, processes, files and safeguards.",
-      caption: "Real product screenshot: Neo4j evidence graph for the fx-04 finding (FIXTURE data).",
+      alt: "Evidence view for an example finding, linking it to the related activity and safeguards.",
+      caption: "Real product screenshot: evidence view for an example finding (FIXTURE data).",
       width: 1800,
       height: 1125,
     },
@@ -90,16 +90,16 @@ export const FEATURES: Feature[] = [
     id: "safeguards",
     eyebrow: "Turn incidents into tested safeguards",
     title: "Fix it, then prove the fix works.",
-    body: "A finding becomes a proposed safeguard you review as a diff. Underwatch then re-runs the scenario and records whether the safeguard held.",
+    body: "A finding becomes a proposed safeguard you review before anything changes. Underwatch then tests it and records whether it held.",
     points: [
-      "Kernel enforcement: verified for the tested scenario",
-      "Claude Code permission rule: shown as bypassed when Bash got around it",
-      "Nothing is applied without a diff and your approval",
+      "Safeguards tested, not just written",
+      "Shown as failed when the agent gets around them",
+      "Nothing is applied without your approval",
     ],
     shot: {
       src: "/landing/safeguard-verified.webp",
-      alt: "Kernel enforcement safeguard: Investigate, Propose, Review, Test and Verify steps complete, tested result Passed (tested scenario only), Security: Blocked and Task succeeded shown separately.",
-      caption: "Real product screenshot: a kernel enforcement safeguard verified for the tested scenario.",
+      alt: "Safeguard workflow: Investigate, Propose, Review, Test and Verify steps complete, with the tested result shown as Passed.",
+      caption: "Real product screenshot: a safeguard verified for the tested scenario.",
       width: 1800,
       height: 1125,
     },
@@ -107,10 +107,9 @@ export const FEATURES: Feature[] = [
 ];
 
 export const STEPS: { n: string; title: string; body: string }[] = [
-  { n: "01", title: "Run the agent", body: "Start a supervised Claude Code session in an isolated workspace." },
-  { n: "02", title: "Record independently", body: "Kernel, proxy and git observers capture what really happened." },
-  { n: "03", title: "Compare", body: "The agent's report is checked claim by claim against the observations." },
-  { n: "04", title: "Safeguard and verify", body: "Apply a reviewed fix and re-test it against the same scenario." },
+  { n: "01", title: "Run the agent", body: "Start a supervised coding agent session." },
+  { n: "02", title: "Record independently", body: "Underwatch keeps its own record of what really happened." },
+  { n: "03", title: "Compare", body: "Gaps between what the agent said and what it did become findings." },
+  { n: "04", title: "Safeguard and verify", body: "Apply a reviewed fix and test that it holds." },
 ];
 
-export const BUILT_WITH = ["Neo4j", "ai& Inference", "Cilium Tetragon", "Claude Code"];

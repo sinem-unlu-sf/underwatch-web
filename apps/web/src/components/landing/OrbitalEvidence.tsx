@@ -15,27 +15,27 @@ type Cat = "claim" | "file" | "process" | "network" | "git" | "finding" | "safeg
 const PAIRS: { without: { title: string; body: string }; with: { title: string; body: string }; cats: Cat[]; verified?: boolean }[] = [
   {
     without: { title: "The report is the record", body: "The agent's final report is the primary account of what it did." },
-    with: { title: "Independent observers", body: "Kernel, proxy and git observations recorded outside the agent." },
+    with: { title: "An independent record", body: "Underwatch keeps its own record of what the agent did." },
     cats: ["file", "process", "network", "git"],
   },
   {
     without: { title: "Unexpected file activity", body: "Changes or reads the report doesn't mention can go unnoticed." },
-    with: { title: "Reported vs observed", body: "Each reported action is compared with the observed events." },
+    with: { title: "Gaps flagged", body: "What the agent said is checked against what actually happened." },
     cats: ["claim", "file", "git"],
   },
   {
     without: { title: "Activity without context", body: "Process and network activity lacks an independently assembled context." },
-    with: { title: "Observed activity, ready to inspect", body: "Process and network events are available for investigation." },
+    with: { title: "Activity, ready to inspect", body: "Commands and network activity are ready to investigate." },
     cats: ["process", "network"],
   },
   {
     without: { title: "Manual correlation", body: "Evidence has to be pieced together by hand." },
-    with: { title: "Connected evidence", body: "A Neo4j evidence graph and Ask Witness answers with checked citations." },
+    with: { title: "Connected evidence", body: "Linked evidence and Ask Witness answers with checked citations." },
     cats: ["finding", "claim", "file"],
   },
   {
     without: { title: "Unproven fixes", body: "A proposed fix has no demonstrated effect." },
-    with: { title: "Safeguards re-tested", body: "Reviewed safeguards are tested by re-running the scenario." },
+    with: { title: "Safeguards re-tested", body: "Reviewed safeguards are tested before you rely on them." },
     cats: ["safeguard", "finding"],
     verified: true,
   },
@@ -326,7 +326,7 @@ export function OrbitalEvidence() {
       data-shown={shown ? "true" : "false"}
       className="kw-orbit-grid mt-12 grid items-center gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-x-8"
     >
-      <p className="hidden font-mono text-[11px] uppercase tracking-[0.08em] text-text-tertiary lg:col-start-1 lg:row-start-1 lg:block">Without independent observation</p>
+      <p className="hidden font-mono text-[11px] uppercase tracking-[0.08em] text-text-tertiary lg:col-start-1 lg:row-start-1 lg:block">Without Underwatch</p>
       <p className="hidden font-mono text-[11px] uppercase tracking-[0.08em] text-[#9DBEFF] lg:col-start-3 lg:row-start-1 lg:block">With Underwatch</p>
       <figure className="mb-6 md:col-span-2 lg:col-span-1 lg:col-start-2 lg:row-span-6 lg:row-start-1 lg:mb-0">
         <OrbitalViz active={active} />
