@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState, type ComponentType, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { Link } from "react-router";
 import { BetaSignupForm } from "../components/landing/BetaSignupForm";
 import { EyeGarden } from "../components/landing/EyeGarden";
 import { IntroAnimation, shouldPlayIntro } from "../components/landing/IntroAnimation";
+import { EvidenceRadar } from "../components/landing/EvidenceRadar";
+import { FeatureScene } from "../components/landing/FeatureScenes";
 import { OrbitalEvidence } from "../components/landing/OrbitalEvidence";
 import { EyeFlowerCluster } from "../components/landing/LandingAccents";
-import { ChecklistCharacter, CompareCharacter, InvestigateCharacter, ObserverCharacter, SafeguardCharacter } from "../components/landing/LandingCharacters";
-import { BETA_CTA, BETA_HREF, FEATURES, FIXTURE_DEMO_HREF, HERO_SHOT, LANDING_ONLY, LIVE_DEMO_HREF, STEPS, type LandingShot } from "../components/landing/landingContent";
+import { ChecklistCharacter } from "../components/landing/LandingCharacters";
+import { BETA_CTA, BETA_HREF, FEATURES, FIXTURE_DEMO_HREF, LANDING_ONLY, LIVE_DEMO_HREF, STEPS } from "../components/landing/landingContent";
 import { LogoMark } from "../components/shell/nav";
 
 /**
@@ -160,24 +162,6 @@ function trackPointer(e: ReactPointerEvent<HTMLElement>) {
   const r = el.getBoundingClientRect();
   el.style.setProperty("--mx", `${e.clientX - r.left}px`);
   el.style.setProperty("--my", `${e.clientY - r.top}px`);
-}
-
-function Shot({ shot, priority = false, className = "" }: { shot: LandingShot; priority?: boolean; className?: string }) {
-  return (
-    <figure className={`kw-shot ${className}`}>
-      <div className="kw-shot-frame">
-        <img
-          src={shot.src}
-          alt={shot.alt}
-          width={shot.width}
-          height={shot.height}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-          className="block h-auto w-full max-w-full"
-        />
-      </div>
-    </figure>
-  );
 }
 
 /** Fades its children in once they scroll into view (immediately when IntersectionObserver or motion is unavailable). */
@@ -380,8 +364,8 @@ function ProductEvidencePreview() {
           </SectionHeading>
         </Reveal>
         <Reveal delay={80}>
-          <div className="kw-shot-stage mt-10 sm:mt-12">
-            <Shot shot={HERO_SHOT} priority />
+          <div className="kw-shot-stage mx-auto mt-10 max-w-[680px] sm:mt-12">
+            <EvidenceRadar />
           </div>
         </Reveal>
       </div>
@@ -481,24 +465,6 @@ function FeatureExtra({ id }: { id: string }) {
   return null;
 }
 
-const FEATURE_CHARACTERS: Record<string, ComponentType<{ className?: string }>> = {
-  observe: ObserverCharacter,
-  compare: CompareCharacter,
-  investigate: InvestigateCharacter,
-  safeguards: SafeguardCharacter,
-};
-
-/** Small supporting scene under each feature's copy (observing, comparing, investigating, safeguarding). */
-function FeatureCharacter({ id }: { id: string }) {
-  const Character = FEATURE_CHARACTERS[id];
-  if (!Character) return null;
-  return (
-    <div aria-hidden="true" className="kw-character pointer-events-none mt-8 hidden sm:block">
-      <Character className="h-auto w-[148px]" />
-    </div>
-  );
-}
-
 function FeatureSections() {
   return (
     <div id="features" className="scroll-mt-20">
@@ -527,10 +493,9 @@ function FeatureSections() {
                 </ul>
               )}
               <FeatureExtra id={f.id} />
-              <FeatureCharacter id={f.id} />
             </Reveal>
             <Reveal delay={100} className={`min-w-0 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
-              <Shot shot={f.shot} />
+              <FeatureScene id={f.id} />
             </Reveal>
           </div>
         </section>

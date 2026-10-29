@@ -52,10 +52,11 @@ describe("app routing", () => {
     expect(within(start).getByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
     expect(within(start).getByRole("link", { name: "Open the app" })).toHaveAttribute("href", "/overview");
     expect(within(start).getByRole("link", { name: /Open live demo/ })).toHaveAttribute("href", LIVE_DEMO_HREF);
-    // Screenshots have alt text and no caption lines under them.
-    const imgs = screen.getAllByRole("img");
-    expect(imgs.length).toBeGreaterThanOrEqual(5);
-    for (const img of imgs) expect(img.getAttribute("alt")?.length ?? 0).toBeGreaterThan(20);
+    // Illustrated scenes replace product screenshots; each has a plain-language label.
+    expect(document.querySelectorAll('img[src^="/landing/"]')).toHaveLength(0);
+    const scenes = screen.getAllByRole("img", { name: /^Illustration:/ });
+    expect(scenes).toHaveLength(4);
+    for (const s of scenes) expect(s.getAttribute("aria-label")?.length ?? 0).toBeGreaterThan(20);
     expect(screen.queryAllByText(/^Real product screenshot/)).toHaveLength(0);
     for (const name of ["Neo4j", "ai& Inference", "Cilium Tetragon"]) expect(screen.queryByText(name)).not.toBeInTheDocument();
   });

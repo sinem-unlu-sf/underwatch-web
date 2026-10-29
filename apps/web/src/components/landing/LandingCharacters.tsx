@@ -130,6 +130,24 @@ export function CompareCharacter({ className = "" }: Props) {
   );
 }
 
+/** A figure pointing up and to the right, for scenes that draw their own subject. */
+export function PointingCharacter({ className = "" }: Props) {
+  return (
+    <svg viewBox="0 0 80 140" aria-hidden="true" focusable="false" className={className}>
+      <Shadow x={40} />
+      <Legs x={40} />
+      <Torso x={40} />
+      <Head x={40} />
+      <Arm d="M32 78q-4 10-2 22" />
+      <Hand cx={30} cy={101} />
+      <g className="kw-anim kw-ch-arm">
+        <Arm d="M48 78q10-6 16-20" />
+        <Hand cx={64} cy={57} />
+      </g>
+    </svg>
+  );
+}
+
 /** A figure holding a magnifier over a small evidence-graph fragment. */
 export function InvestigateCharacter({ className = "" }: Props) {
   const nodes = [

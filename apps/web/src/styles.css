@@ -1222,3 +1222,26 @@
     transform: none;
   }
 }
+
+/* Feature scenes (FeatureScenes.tsx): illustrated panels in place of product screenshots. */
+.kw-scene {
+  background:
+    radial-gradient(70% 80% at 64% 42%, rgba(65, 105, 225, 0.13), transparent 70%),
+    linear-gradient(180deg, #0d1423, #070d1a);
+}
+.kw-scene text {
+  font-family: inherit;
+}
+.kw-scene-spin {
+  animation: kw-spin 12s linear infinite;
+}
+.kw-scene-trace {
+  stroke-dasharray: 6 8;
+  animation: kw-trace 1.8s linear infinite;
+}
+@keyframes kw-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes kw-trace {
+  to { stroke-dashoffset: -28; }
+}

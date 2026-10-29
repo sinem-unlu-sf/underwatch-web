@@ -19,17 +19,7 @@ export const LANDING_ONLY = import.meta.env.VITE_LANDING_ONLY === "1";
 export const BETA_CTA = "Join the beta";
 export const BETA_HREF = "#beta";
 
-export type LandingShot ={ src: string; alt: string; caption: string; width: number; height: number };
-
-export const HERO_SHOT: LandingShot = {
-  src: "/landing/hero-finding.webp",
-  alt: "Underwatch finding page for a live supervised coding agent session, with a short read of what went wrong and the evidence behind it.",
-  caption: "Real product screenshot: a live finding from a supervised Claude Code run (synthetic secret).",
-  width: 1800,
-  height: 1125,
-};
-
-export type Feature = { id: string; eyebrow: string; title: string; body: string; points: string[]; shot: LandingShot };
+export type Feature = { id: string; eyebrow: string; title: string; body: string; points: string[] };
 
 export const FEATURES: Feature[] = [
   {
@@ -42,13 +32,6 @@ export const FEATURES: Feature[] = [
       "A record the agent cannot edit",
       "Works alongside the agent you already use",
     ],
-    shot: {
-      src: "/landing/evidence-events.webp",
-      alt: "Evidence Explorer listing the recorded activity for a session, with each event's type and outcome.",
-      caption: "Real product screenshot: Evidence Explorer for a session.",
-      width: 1800,
-      height: 1125,
-    },
   },
   {
     id: "compare",
@@ -60,13 +43,6 @@ export const FEATURES: Feature[] = [
       "Security outcome kept separate from task outcome",
       "Unknown stays unknown: never shown as safe",
     ],
-    shot: {
-      src: "/landing/compare.webp",
-      alt: "Finding comparison panel showing where the agent's account and the recorded activity differ.",
-      caption: "Real product screenshot: comparison view for a live finding.",
-      width: 1800,
-      height: 1125,
-    },
   },
   {
     id: "investigate",
@@ -78,13 +54,6 @@ export const FEATURES: Feature[] = [
       "Ask Witness: AI interprets, records establish the facts",
       "Every answer cites its sources",
     ],
-    shot: {
-      src: "/landing/evidence-graph.webp",
-      alt: "Evidence view for an example finding, linking it to the related activity and safeguards.",
-      caption: "Real product screenshot: evidence view for an example finding (FIXTURE data).",
-      width: 1800,
-      height: 1125,
-    },
   },
   {
     id: "safeguards",
@@ -96,13 +65,6 @@ export const FEATURES: Feature[] = [
       "Shown as failed when the agent gets around them",
       "Nothing is applied without your approval",
     ],
-    shot: {
-      src: "/landing/safeguard-verified.webp",
-      alt: "Safeguard workflow: Investigate, Propose, Review, Test and Verify steps complete, with the tested result shown as Passed.",
-      caption: "Real product screenshot: a safeguard verified for the tested scenario.",
-      width: 1800,
-      height: 1125,
-    },
   },
 ];
 
